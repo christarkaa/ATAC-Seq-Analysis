@@ -18,3 +18,38 @@ fastqc SRR24135556_1.fastq SRR24135556_2.fastq -o QC_Reports
 # Summarizing the QC results
 multiqc QC_Reports
 
+# Remove Nextera transposase adapter sequences using cudaput
+cutadapt -a CTGTCTCTTATACACATCT -A CTGTCTCTTATACACATCT \
+-o trimmed_SRR24135553_1.fastq -p trimmed_SRR24135553_2.fastq \
+--report=full SRR24135553_1.fastq SRR24135553_2.fastq > SRR24135553_report.txt
+
+cutadapt -a CTGTCTCTTATACACATCT -A CTGTCTCTTATACACATCT \
+-o trimmed_SRR24135554_1.fastq -p trimmed_SRR24135554_2.fastq \
+--report=full SRR24135554_1.fastq SRR24135554_2.fastq > SRR24135554_report.txt
+
+cutadapt -a CTGTCTCTTATACACATCT -A CTGTCTCTTATACACATCT \
+-o trimmed_SRR24135555_1.fastq -p trimmed_SRR24135555_2.fastq \
+--report=full SRR24135555_1.fastq SRR24135555_2.fastq > SRR24135555_report.txt
+
+cutadapt -a CTGTCTCTTATACACATCT -A CTGTCTCTTATACACATCT \
+-o trimmed_SRR24135556_1.fastq -p trimmed_SRR24135556_2.fastq \
+--report=full SRR24135556_1.fastq SRR24135556_2.fastq > SRR24135556_report.txt
+
+Trimming with Sickle
+sickle pe -f trimmed_SRR24135553_1.fastq -r trimmed_SRR24135553_2.fastq \
+-t sanger -o quality_trimmed_SRR24135553_1.fastq -p quality_trimmed_SRR24135553_2.fastq \
+-s singletons_SRR24135553.fastq -q 20 -l 90
+
+sickle pe -f trimmed_SRR24135554_1.fastq -r trimmed_SRR24135554_2.fastq \
+-t sanger -o quality_trimmed_SRR24135554_1.fastq -p quality_trimmed_SRR24135554_2.fastq \
+-s singletons_SRR24135554.fastq -q 20 -l 90
+
+sickle pe -f trimmed_SRR24135555_1.fastq -r trimmed_SRR24135555_2.fastq \
+-t sanger -o quality_trimmed_SRR24135555_1.fastq -p quality_trimmed_SRR24135555_2.fastq \
+-s singletons_SRR24135555.fastq -q 20 -l 90
+
+sickle pe -f trimmed_SRR24135556_1.fastq -r trimmed_SRR24135556_2.fastq \
+-t sanger -o quality_trimmed_SRR24135556_1.fastq -p quality_trimmed_SRR24135556_2.fastq \
+-s singletons_SRR24135556.fastq -q 20 -l 90
+
+
