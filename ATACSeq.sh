@@ -142,7 +142,7 @@ bedtools bamtobed -i Mapping/subsampled_SRR24135556.bam > Mapping/SRR24135556.be
 
 
 # Peak calling macs2
-macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks/SRR24135553
-macs2 callpeak -t Mapping/SRR24135554.bed -n SRR24135554 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks/SRR24135554
-macs2 callpeak -t Mapping/SRR24135555.bed -n SRR24135555 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks/SRR24135555
-macs2 callpeak -t Mapping/SRR24135556.bed -n SRR24135556 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks/SRR24135556
+macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135554.bed -n SRR24135554 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135555.bed -n SRR24135555 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135556.bed -n SRR24135556 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
