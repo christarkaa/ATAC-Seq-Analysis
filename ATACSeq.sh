@@ -62,4 +62,32 @@ bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135554_1.fastq -2 quality_trimmed_
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135555_1.fastq -2 quality_trimmed_SRR24135555_2.fastq -S Mapping/SRR24135555.sam
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135556_1.fastq -2 quality_trimmed_SRR24135556_2.fastq -S Mapping/SRR24135556.sam
 
+# Convert sam to bam files using samtools
+samtools view -@ 20 -S -b Mapping/SRR24135553.sam > Mapping/SRR24135553.bam
+samtools view -@ 20 -S -b Mapping/SRR24135554.sam > Mapping/SRR24135554.bam
+samtools view -@ 20 -S -b Mapping/SRR24135555.sam > Mapping/SRR24135555.bam
+samtools view -@ 20 -S -b Mapping/SRR24135556.sam > Mapping/SRR24135556.bam
 
+# Elimination of mitochondria reads using samtools
+samtools view -hF 4 Mapping/SRR24135553.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135553_uM.bam
+samtools view -hF 4 Mapping/SRR24135554.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135554_uM.bam
+samtools view -hF 4 Mapping/SRR24135555.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135555_uM.bam
+samtools view -hF 4 Mapping/SRR24135556.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135556_uM.bam
+
+# Sort the bam files using samtools
+samtools sort Mapping/SRR24135553_uM.bam > Mapping/sorted_SRR24135553_uM.bam
+samtools sort Mapping/SRR24135554_uM.bam > Mapping/sorted_SRR24135554_uM.bam
+samtools sort Mapping/SRR24135555_uM.bam > Mapping/sorted_SRR24135555_uM.bam
+samtools sort Mapping/SRR24135556_uM.bam > Mapping/sorted_SRR24135556_uM.bam
+
+Index the sorted bam files using samtools
+samtools index Mapping/sorted_SRR24135553_uM.bam
+samtools index Mapping/sorted_SRR24135554_uM.bam
+samtools index Mapping/sorted_SRR24135555_uM.bam
+samtools index Mapping/sorted_SRR24135556_uM.bam
+
+# Count number of alignments
+samtools view -c Mapping/sorted_SRR24135553_uM.bam
+samtools view -c Mapping/sorted_SRR24135554_uM.bam
+samtools view -c Mapping/sorted_SRR24135555_uM.bam
+samtools view -c Mapping/sorted_SRR24135556_uM.bam
