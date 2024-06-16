@@ -80,7 +80,7 @@ samtools sort Mapping/SRR24135554_uM.bam > Mapping/sorted_SRR24135554_uM.bam
 samtools sort Mapping/SRR24135555_uM.bam > Mapping/sorted_SRR24135555_uM.bam
 samtools sort Mapping/SRR24135556_uM.bam > Mapping/sorted_SRR24135556_uM.bam
 
-Index the sorted bam files using samtools
+# Index the sorted bam files using samtools
 samtools index Mapping/sorted_SRR24135553_uM.bam
 samtools index Mapping/sorted_SRR24135554_uM.bam
 samtools index Mapping/sorted_SRR24135555_uM.bam
@@ -91,3 +91,45 @@ samtools view -c Mapping/sorted_SRR24135553_uM.bam
 samtools view -c Mapping/sorted_SRR24135554_uM.bam
 samtools view -c Mapping/sorted_SRR24135555_uM.bam
 samtools view -c Mapping/sorted_SRR24135556_uM.bam
+
+# Normalisation
+## The number of alignment count for each sample
+# 9762071
+# 9923188
+# 6770216
+# 6886528
+
+# Define the lowest read count
+lowest_count=6770216
+
+# Calculate subsampling ratios for each sample
+ratio_SRR24135553=$(awk "BEGIN {print $lowest_count/9762071}")
+ratio_SRR24135554=$(awk "BEGIN {print $lowest_count/9923188}")
+ratio_SRR24135555=1  # No subsampling needed for SRR24135555, already at target size
+ratio_SRR24135556=$(awk "BEGIN {print $lowest_count/6886528}")
+
+# Print calculated ratios for verification
+echo "Subsampling Ratios:"
+echo "SRR24135553: $ratio_SRR24135553"
+echo "SRR24135554: $ratio_SRR24135554"
+echo "SRR24135555: $ratio_SRR24135555"
+echo "SRR24135556: $ratio_SRR24135556"
+
+# Subsample using samtools
+samtools view -h -b -s 660$ratio_SRR24135553 Mapping/sorted_SRR24135553_uM.bam > Mapping/subsampled_SRR24135553.bam
+samtools view -h -b -s 660$ratio_SRR24135554 Mapping/sorted_SRR24135554_uM.bam > Mapping/subsampled_SRR24135554.bam
+samtools view -h -b Mapping/sorted_SRR24135555_uM.bam > Mapping/subsampled_SRR24135555.bam  # No subsampling, just copy
+samtools view -h -b -s 660$ratio_SRR24135556 Mapping/sorted_SRR24135556_uM.bam > Mapping/subsampled_SRR24135556.bam
+
+# Index the subsampled BAM files
+samtools index Mapping/subsampled_SRR24135553.bam
+samtools index Mapping/subsampled_SRR24135554.bam
+samtools index Mapping/subsampled_SRR24135555.bam  # Index the copied BAM file
+samtools index Mapping/subsampled_SRR24135556.bam
+
+# Optional: Count the number of alignments in each subsampled file to verify normalization
+echo "Post-subsampling alignment counts:"
+samtools view -c Mapping/subsampled_SRR24135553.bam
+samtools view -c Mapping/subsampled_SRR24135554.bam
+samtools view -c Mapping/subsampled_SRR24135555.bam
+samtools view -c Mapping/subsampled_SRR24135556.bam
