@@ -134,4 +134,11 @@ samtools view -c Mapping/subsampled_SRR24135554.bam
 samtools view -c Mapping/subsampled_SRR24135555.bam
 samtools view -c Mapping/subsampled_SRR24135556.bam
 
+# Convert bam to bed files
+bedtools bamtobed -i Mapping/subsampled_SRR24135553.bam > Mapping/SRR24135553.bed
+bedtools bamtobed -i Mapping/subsampled_SRR24135554.bam > Mapping/SRR24135554.bed
+bedtools bamtobed -i Mapping/subsampled_SRR24135555.bam > Mapping/SRR24135555.bed
+bedtools bamtobed -i Mapping/subsampled_SRR24135556.bam > Mapping/SRR24135556.bed
+
+
 # Peak calling macs2
