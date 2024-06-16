@@ -133,3 +133,5 @@ samtools view -c Mapping/subsampled_SRR24135553.bam
 samtools view -c Mapping/subsampled_SRR24135554.bam
 samtools view -c Mapping/subsampled_SRR24135555.bam
 samtools view -c Mapping/subsampled_SRR24135556.bam
+
+# Peak calling macs2
