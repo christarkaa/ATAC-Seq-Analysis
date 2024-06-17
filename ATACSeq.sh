@@ -154,9 +154,9 @@ for file in Peaks/*.narrowPeak; do
 done
 
 # Merge treatment peaks
-cat Peaks/SRR24135553_peaks.bed Peaks/SRR24135554_peaks.bed | -k1,1 -k2,2n > Peaks/treatment_peaks.bed
+cat Peaks/SRR24135553_peaks.bed Peaks/SRR24135554_peaks.bed | sort -k1,1 -k2,2n > Peaks/treatment_peaks.bed
 bedtools merge -i treatments_peaks.bed > Peaks/dmPGE2_peaks.bed
 
 # Merge control peaks
-cat Peaks/SRR24135555_peaks.bed Peaks/SRR24135556_peaks.bed | -k1,1 -k2,2n > Peaks/control_peaks.bed
+cat Peaks/SRR24135555_peaks.bed Peaks/SRR24135556_peaks.bed | sort -k1,1 -k2,2n > Peaks/control_peaks.bed
 bedtools merge -i control_peaks.bed > Peaks/DMSO_peaks.bed
