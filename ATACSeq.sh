@@ -152,3 +152,5 @@ for file in Peaks/*.narrowPeak; do
     base=$(basename $file .narrowPeak)
     awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4}' $file > Peaks/${base}.bed
 done
+
+# 
