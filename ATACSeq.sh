@@ -153,4 +153,10 @@ for file in Peaks/*.narrowPeak; do
     awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4}' $file > Peaks/${base}.bed
 done
 
-# 
+# Merge treatment peaks
+cat Peaks/SRR24135553_peaks.bed Peaks/SRR24135554_peaks.bed | -k1,1 -k2,2n > treatment_peaks.bed
+bedtools merge -i treatments_peaks.bed > dmPGE2_peaks.bed
+
+# Merge control peaks
+cat Peaks/SRR24135555_peaks.bed Peaks/SRR24135556_peaks.bed | -k1,1 -k2,2n > control_peaks.bed
+bedtools merge -i control_peaks.bed > DMSO_peaks.bed
