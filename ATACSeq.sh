@@ -146,3 +146,9 @@ macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 --qvalue 0.001 -f BED -
 macs2 callpeak -t Mapping/SRR24135554.bed -n SRR24135554 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
 macs2 callpeak -t Mapping/SRR24135555.bed -n SRR24135555 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
 macs2 callpeak -t Mapping/SRR24135556.bed -n SRR24135556 --qvalue 0.001 -f BED -g hs --keep-dup all --SPMR --call-summits --outdir Peaks
+
+# Convert narrowPeak files to BED format
+for file in Peaks/*.narrowPeak; do
+    base=$(basename $file .narrowPeak)
+    awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4}' $file > Peaks/${base}.bed
+done
