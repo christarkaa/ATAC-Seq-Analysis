@@ -160,3 +160,7 @@ bedtools merge -i Peaks/treatment_peaks.bed > Peaks/dmPGE2_peaks.bed
 # Merge control peaks
 cat Peaks/SRR24135555_peaks.bed Peaks/SRR24135556_peaks.bed | sort -k1,1 -k2,2n > Peaks/control_peaks.bed
 bedtools merge -i Peaks/control_peaks.bed > Peaks/DMSO_peaks.bed
+
+# Peak annotation using homer
+annotatePeaks.pl Peaks/dmPGE2_peaks.bed hg38 > Peaks/dmPGE2_peaks.txt
+annotatePeaks.pl Peaks/DMSO_peaks.bed hg38 > Peaks/DMSO_peaks.txt
