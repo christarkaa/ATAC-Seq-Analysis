@@ -164,3 +164,7 @@ bedtools merge -i Peaks/control_peaks.bed > Peaks/DMSO_peaks.bed
 # Peak annotation using homer
 annotatePeaks.pl Peaks/dmPGE2_peaks.bed hg38 > Peaks/dmPGE2_peaks.txt
 annotatePeaks.pl Peaks/DMSO_peaks.bed hg38 > Peaks/DMSO_peaks.txt
+
+# Convert bedgraph to bigwig files
+## Get chromosome sizes
+fetchChromSizes hg38 > hg38.chromSizes
