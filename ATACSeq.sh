@@ -142,10 +142,10 @@ bedtools bamtobed -i Mapping/subsampled_SRR24135556.bam > Mapping/SRR24135556.be
 
 
 # Peak calling macs2
-macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 -q 0.001 -f BED -g hs --bdg --keep-dup all --SPMR --call-summits --outdir Peaks
-macs2 callpeak -t Mapping/SRR24135554.bed -n SRR24135554 -q 0.001 -f BED -g hs --bdg --keep-dup all --SPMR --call-summits --outdir Peaks
-macs2 callpeak -t Mapping/SRR24135555.bed -n SRR24135555 -q 0.001 -f BED -g hs --bdg --keep-dup all --SPMR --call-summits --outdir Peaks
-macs2 callpeak -t Mapping/SRR24135556.bed -n SRR24135556 -q 0.001 -f BED -g hs --bdg --keep-dup all --SPMR --call-summits --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 -q 0.05 -f BEDPE -g hs -B --keep-dup all --trackline --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135554.bed -n SRR24135554 -q 0.05 -f BEDPE -g hs -B --keep-dup all --trackline --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135555.bed -n SRR24135555 -q 0.05 -f BEDPE -g hs -B --keep-dup all --trackline --outdir Peaks
+macs2 callpeak -t Mapping/SRR24135556.bed -n SRR24135556 -q 0.05 -f BEDPE -g hs -B --keep-dup all --trackline --outdir Peaks
 
 # Convert narrowPeak files to BED format
 for file in Peaks/*.narrowPeak; do
