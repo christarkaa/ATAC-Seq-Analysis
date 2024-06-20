@@ -97,8 +97,14 @@ count_SRR24135554=$(samtools view -c Mapping/sorted_SRR24135554_uM.bam)
 count_SRR24135555=$(samtools view -c Mapping/sorted_SRR24135555_uM.bam)
 count_SRR24135556=$(samtools view -c Mapping/sorted_SRR24135556_uM.bam)
 
+# Print the counts
+samtools view -c Mapping/sorted_SRR24135553_uM.bam
+samtools view -c Mapping/sorted_SRR24135554_uM.bam
+samtools view -c Mapping/sorted_SRR24135555_uM.bam
+samtools view -c Mapping/sorted_SRR24135556_uM.bam
+
 # Define the lowest read count
-lowest_count=6770216
+lowest_count=5693068
 
 # Calculate subsampling ratios
 ratio_SRR24135553=$(awk "BEGIN {print $lowest_count/$count_SRR24135553}")
