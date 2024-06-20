@@ -52,68 +52,59 @@ sickle pe -f trimmed_SRR24135556_1.fastq -r trimmed_SRR24135556_2.fastq \
 -t sanger -o quality_trimmed_SRR24135556_1.fastq -p quality_trimmed_SRR24135556_2.fastq \
 -s singletons_SRR24135556.fastq -q 20 -l 90
 
-# Mapping
-## Build reference genome index
+# Build reference genome index
 bowtie2-build GRCh38.p14.genome.fa hg38
 
-## Map reference genome index with the trimmed sequences
+# Map reference genome index with the trimmed sequences
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135553_1.fastq -2 quality_trimmed_SRR24135553_2.fastq -S Mapping/SRR24135553.sam
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135554_1.fastq -2 quality_trimmed_SRR24135554_2.fastq -S Mapping/SRR24135554.sam
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135555_1.fastq -2 quality_trimmed_SRR24135555_2.fastq -S Mapping/SRR24135555.sam
 bowtie2 -p 10 -x hg38 -1 quality_trimmed_SRR24135556_1.fastq -2 quality_trimmed_SRR24135556_2.fastq -S Mapping/SRR24135556.sam
 
-# Convert sam to bam files using samtools
+# Convert SAM to BAM files using samtools
 samtools view -@ 20 -S -b Mapping/SRR24135553.sam > Mapping/SRR24135553.bam
 samtools view -@ 20 -S -b Mapping/SRR24135554.sam > Mapping/SRR24135554.bam
 samtools view -@ 20 -S -b Mapping/SRR24135555.sam > Mapping/SRR24135555.bam
 samtools view -@ 20 -S -b Mapping/SRR24135556.sam > Mapping/SRR24135556.bam
 
-# Elimination of mitochondria reads using samtools
+# Elimination of mitochondrial reads using samtools
 samtools view -hF 4 Mapping/SRR24135553.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135553_uM.bam
 samtools view -hF 4 Mapping/SRR24135554.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135554_uM.bam
 samtools view -hF 4 Mapping/SRR24135555.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135555_uM.bam
 samtools view -hF 4 Mapping/SRR24135556.bam | grep -vF chrM | samtools view -bS > Mapping/SRR24135556_uM.bam
 
 # Restrict to properly-paired reads only
-# -f 3 specifies only properly-paired reads
 samtools view -bh -f 3 Mapping/SRR24135553_uM.bam > Mapping/filt_SRR24135553_uM.bam
 samtools view -bh -f 3 Mapping/SRR24135554_uM.bam > Mapping/filt_SRR24135554_uM.bam
 samtools view -bh -f 3 Mapping/SRR24135555_uM.bam > Mapping/filt_SRR24135555_uM.bam
 samtools view -bh -f 3 Mapping/SRR24135556_uM.bam > Mapping/filt_SRR24135556_uM.bam
 
-# Sort the bam files using samtools
-samtools sort Mapping/filt_SSRR24135553_uM.bam > Mapping/sorted_SRR24135553_uM.bam
-samtools sort Mapping/filt_SSRR24135554_uM.bam > Mapping/sorted_SRR24135554_uM.bam
-samtools sort Mapping/filt_SSRR24135555_uM.bam > Mapping/sorted_SRR24135555_uM.bam
-samtools sort Mapping/filt_SSRR24135556_uM.bam > Mapping/sorted_SRR24135556_uM.bam
+# Sort the BAM files by coordinate
+samtools sort -o Mapping/sorted_SRR24135553_uM.bam Mapping/filt_SRR24135553_uM.bam
+samtools sort -o Mapping/sorted_SRR24135554_uM.bam Mapping/filt_SRR24135554_uM.bam
+samtools sort -o Mapping/sorted_SRR24135555_uM.bam Mapping/filt_SRR24135555_uM.bam
+samtools sort -o Mapping/sorted_SRR24135556_uM.bam Mapping/filt_SRR24135556_uM.bam
 
-# Index the sorted bam files using samtools
+# Index the sorted BAM files
 samtools index Mapping/sorted_SRR24135553_uM.bam
 samtools index Mapping/sorted_SRR24135554_uM.bam
 samtools index Mapping/sorted_SRR24135555_uM.bam
 samtools index Mapping/sorted_SRR24135556_uM.bam
 
-# Count number of alignments
-samtools view -c Mapping/sorted_SRR24135553_uM.bam
-samtools view -c Mapping/sorted_SRR24135554_uM.bam
-samtools view -c Mapping/sorted_SRR24135555_uM.bam
-samtools view -c Mapping/sorted_SRR24135556_uM.bam
-
-# Normalisation
-## The number of alignment count for each sample
-# 9762071
-# 9923188
-# 6770216
-# 6886528
+# Count number of alignments for normalization
+count_SRR24135553=$(samtools view -c Mapping/sorted_SRR24135553_uM.bam)
+count_SRR24135554=$(samtools view -c Mapping/sorted_SRR24135554_uM.bam)
+count_SRR24135555=$(samtools view -c Mapping/sorted_SRR24135555_uM.bam)
+count_SRR24135556=$(samtools view -c Mapping/sorted_SRR24135556_uM.bam)
 
 # Define the lowest read count
 lowest_count=6770216
 
-# Calculate subsampling ratios for each sample
-ratio_SRR24135553=$(awk "BEGIN {print $lowest_count/9762071}")
-ratio_SRR24135554=$(awk "BEGIN {print $lowest_count/9923188}")
-ratio_SRR24135555=1  # No subsampling needed for SRR24135555, already at target size
-ratio_SRR24135556=$(awk "BEGIN {print $lowest_count/6886528}")
+# Calculate subsampling ratios
+ratio_SRR24135553=$(awk "BEGIN {print $lowest_count/$count_SRR24135553}")
+ratio_SRR24135554=$(awk "BEGIN {print $lowest_count/$count_SRR24135554}")
+ratio_SRR24135555=1  # No subsampling needed for SRR24135555
+ratio_SRR24135556=$(awk "BEGIN {print $lowest_count/$count_SRR24135556}")
 
 # Print calculated ratios for verification
 echo "Subsampling Ratios:"
@@ -123,15 +114,15 @@ echo "SRR24135555: $ratio_SRR24135555"
 echo "SRR24135556: $ratio_SRR24135556"
 
 # Subsample using samtools
-samtools view -h -b -s 660$ratio_SRR24135553 Mapping/sorted_SRR24135553_uM.bam > Mapping/subsampled_SRR24135553.bam
-samtools view -h -b -s 660$ratio_SRR24135554 Mapping/sorted_SRR24135554_uM.bam > Mapping/subsampled_SRR24135554.bam
+samtools view -h -b -s $ratio_SRR24135553 Mapping/sorted_SRR24135553_uM.bam > Mapping/subsampled_SRR24135553.bam
+samtools view -h -b -s $ratio_SRR24135554 Mapping/sorted_SRR24135554_uM.bam > Mapping/subsampled_SRR24135554.bam
 samtools view -h -b Mapping/sorted_SRR24135555_uM.bam > Mapping/subsampled_SRR24135555.bam  # No subsampling, just copy
-samtools view -h -b -s 660$ratio_SRR24135556 Mapping/sorted_SRR24135556_uM.bam > Mapping/subsampled_SRR24135556.bam
+samtools view -h -b -s $ratio_SRR24135556 Mapping/sorted_SRR24135556_uM.bam > Mapping/subsampled_SRR24135556.bam
 
 # Index the subsampled BAM files
 samtools index Mapping/subsampled_SRR24135553.bam
 samtools index Mapping/subsampled_SRR24135554.bam
-samtools index Mapping/subsampled_SRR24135555.bam  # Index the copied BAM file
+samtools index Mapping/subsampled_SRR24135555.bam
 samtools index Mapping/subsampled_SRR24135556.bam
 
 # Optional: Count the number of alignments in each subsampled file to verify normalization
@@ -147,17 +138,23 @@ samtools markdup -r Mapping/subsampled_SRR24135554.bam Mapping/noDup_SRR24135554
 samtools markdup -r Mapping/subsampled_SRR24135555.bam Mapping/noDup_SRR24135555.bam
 samtools markdup -r Mapping/subsampled_SRR24135556.bam Mapping/noDup_SRR24135556.bam
 
-# Sort by read name
-samtools sort -n -o Mapping/namesorted.SRR24135553.bam Mapping/noDup_SRR24135553.bam
-samtools sort -n -o Mapping/namesorted.SRR24135554.bam Mapping/noDup_SRR24135554.bam
-samtools sort -n -o Mapping/namesorted.SRR24135555.bam Mapping/noDup_SRR24135555.bam
-samtools sort -n -o Mapping/namesorted.SRR24135556.bam Mapping/noDup_SRR24135556.bam
+# Index the BAM files after removing duplicates
+samtools index Mapping/noDup_SRR24135553.bam
+samtools index Mapping/noDup_SRR24135554.bam
+samtools index Mapping/noDup_SRR24135555.bam
+samtools index Mapping/noDup_SRR24135556.bam
+
+# Sort by read name for fixmate
+samtools sort -n -o Mapping/namesorted_SRR24135553.bam Mapping/noDup_SRR24135553.bam
+samtools sort -n -o Mapping/namesorted_SRR24135554.bam Mapping/noDup_SRR24135554.bam
+samtools sort -n -o Mapping/namesorted_SRR24135555.bam Mapping/noDup_SRR24135555.bam
+samtools sort -n -o Mapping/namesorted_SRR24135556.bam Mapping/noDup_SRR24135556.bam
 
 # Fix read mates
-samtools fixmate Mapping/noDup_SRR24135553.bam Mapping/fixed_SRR24135553.bam
-samtools fixmate Mapping/noDup_SRR24135554.bam Mapping/fixed_SRR24135554.bam
-samtools fixmate Mapping/noDup_SRR24135555.bam Mapping/fixed_SRR24135555.bam
-samtools fixmate Mapping/noDup_SRR24135556.bam Mapping/fixed_SRR24135556.bam
+samtools fixmate -m Mapping/namesorted_SRR24135553.bam Mapping/fixed_SRR24135553.bam
+samtools fixmate -m Mapping/namesorted_SRR24135554.bam Mapping/fixed_SRR24135554.bam
+samtools fixmate -m Mapping/namesorted_SRR24135555.bam Mapping/fixed_SRR24135555.bam
+samtools fixmate -m Mapping/namesorted_SRR24135556.bam Mapping/fixed_SRR24135556.bam
 
 # Convert bam to bed files
 bedtools bamtobed -i Mapping/fixed_SRR24135553.bam > Mapping/SRR24135553.bed
