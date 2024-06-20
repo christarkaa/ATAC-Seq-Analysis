@@ -97,11 +97,12 @@ count_SRR24135554=$(samtools view -c Mapping/sorted_SRR24135554_uM.bam)
 count_SRR24135555=$(samtools view -c Mapping/sorted_SRR24135555_uM.bam)
 count_SRR24135556=$(samtools view -c Mapping/sorted_SRR24135556_uM.bam)
 
-# Print the counts
-samtools view -c Mapping/sorted_SRR24135553_uM.bam
-samtools view -c Mapping/sorted_SRR24135554_uM.bam
-samtools view -c Mapping/sorted_SRR24135555_uM.bam
-samtools view -c Mapping/sorted_SRR24135556_uM.bam
+# Print the counts for verification
+echo "Alignment counts:"
+echo "SRR24135553: $count_SRR24135553"
+echo "SRR24135554: $count_SRR24135554"
+echo "SRR24135555: $count_SRR24135555"
+echo "SRR24135556: $count_SRR24135556"
 
 # Define the lowest read count
 lowest_count=5693068
@@ -122,7 +123,7 @@ echo "SRR24135556: $ratio_SRR24135556"
 # Subsample using samtools
 samtools view -h -b -s $ratio_SRR24135553 Mapping/sorted_SRR24135553_uM.bam > Mapping/subsampled_SRR24135553.bam
 samtools view -h -b -s $ratio_SRR24135554 Mapping/sorted_SRR24135554_uM.bam > Mapping/subsampled_SRR24135554.bam
-samtools view -h -b Mapping/sorted_SRR24135555_uM.bam > Mapping/subsampled_SRR24135555.bam  # No subsampling, just copy
+cp Mapping/sorted_SRR24135555_uM.bam Mapping/subsampled_SRR24135555.bam  # No subsampling, just copy
 samtools view -h -b -s $ratio_SRR24135556 Mapping/sorted_SRR24135556_uM.bam > Mapping/subsampled_SRR24135556.bam
 
 # Index the subsampled BAM files
@@ -138,11 +139,29 @@ samtools view -c Mapping/subsampled_SRR24135554.bam
 samtools view -c Mapping/subsampled_SRR24135555.bam
 samtools view -c Mapping/subsampled_SRR24135556.bam
 
-# Remove PCR duplicates
-samtools markdup -r Mapping/subsampled_SRR24135553.bam Mapping/noDup_SRR24135553.bam
-samtools markdup -r Mapping/subsampled_SRR24135554.bam Mapping/noDup_SRR24135554.bam
-samtools markdup -r Mapping/subsampled_SRR24135555.bam Mapping/noDup_SRR24135555.bam
-samtools markdup -r Mapping/subsampled_SRR24135556.bam Mapping/noDup_SRR24135556.bam
+# Fix mate information
+samtools sort -n -o Mapping/namesorted_SRR24135553.bam Mapping/subsampled_SRR24135553.bam
+samtools sort -n -o Mapping/namesorted_SRR24135554.bam Mapping/subsampled_SRR24135554.bam
+samtools sort -n -o Mapping/namesorted_SRR24135555.bam Mapping/subsampled_SRR24135555.bam
+samtools sort -n -o Mapping/namesorted_SRR24135556.bam Mapping/subsampled_SRR24135556.bam
+
+# Fix mate information with samtools fixmate
+samtools fixmate -m Mapping/namesorted_SRR24135553.bam Mapping/fixed_SRR24135553.bam
+samtools fixmate -m Mapping/namesorted_SRR24135554.bam Mapping/fixed_SRR24135554.bam
+samtools fixmate -m Mapping/namesorted_SRR24135555.bam Mapping/fixed_SRR24135555.bam
+samtools fixmate -m Mapping/namesorted_SRR24135556.bam Mapping/fixed_SRR24135556.bam
+
+# Sort by coordinates before marking duplicates
+samtools sort -o Mapping/sorted_noDup_SRR24135553.bam Mapping/fixed_SRR24135553.bam
+samtools sort -o Mapping/sorted_noDup_SRR24135554.bam Mapping/fixed_SRR24135554.bam
+samtools sort -o Mapping/sorted_noDup_SRR24135555.bam Mapping/fixed_SRR24135555.bam
+samtools sort -o Mapping/sorted_noDup_SRR24135556.bam Mapping/fixed_SRR24135556.bam
+
+# Remove PCR duplicates after sorting by coordinates
+samtools markdup -r Mapping/sorted_noDup_SRR24135553.bam Mapping/noDup_SRR24135553.bam
+samtools markdup -r Mapping/sorted_noDup_SRR24135554.bam Mapping/noDup_SRR24135554.bam
+samtools markdup -r Mapping/sorted_noDup_SRR24135555.bam Mapping/noDup_SRR24135555.bam
+samtools markdup -r Mapping/sorted_noDup_SRR24135556.bam Mapping/noDup_SRR24135556.bam
 
 # Index the BAM files after removing duplicates
 samtools index Mapping/noDup_SRR24135553.bam
@@ -150,23 +169,11 @@ samtools index Mapping/noDup_SRR24135554.bam
 samtools index Mapping/noDup_SRR24135555.bam
 samtools index Mapping/noDup_SRR24135556.bam
 
-# Sort by read name for fixmate
-samtools sort -n -o Mapping/namesorted_SRR24135553.bam Mapping/noDup_SRR24135553.bam
-samtools sort -n -o Mapping/namesorted_SRR24135554.bam Mapping/noDup_SRR24135554.bam
-samtools sort -n -o Mapping/namesorted_SRR24135555.bam Mapping/noDup_SRR24135555.bam
-samtools sort -n -o Mapping/namesorted_SRR24135556.bam Mapping/noDup_SRR24135556.bam
-
-# Fix read mates
-samtools fixmate -m Mapping/namesorted_SRR24135553.bam Mapping/fixed_SRR24135553.bam
-samtools fixmate -m Mapping/namesorted_SRR24135554.bam Mapping/fixed_SRR24135554.bam
-samtools fixmate -m Mapping/namesorted_SRR24135555.bam Mapping/fixed_SRR24135555.bam
-samtools fixmate -m Mapping/namesorted_SRR24135556.bam Mapping/fixed_SRR24135556.bam
-
-# Convert bam to bed files
-bedtools bamtobed -i Mapping/fixed_SRR24135553.bam > Mapping/SRR24135553.bed
-bedtools bamtobed -i Mapping/fixed_SRR24135554.bam > Mapping/SRR24135554.bed
-bedtools bamtobed -i Mapping/fixed_SRR24135555.bam > Mapping/SRR24135555.bed
-bedtools bamtobed -i Mapping/fixed_SRR24135556.bam > Mapping/SRR24135556.bed
+# Convert BAM to BED files using bedtools
+bedtools bamtobed -i Mapping/noDup_SRR24135553.bam > Mapping/SRR24135553.bed
+bedtools bamtobed -i Mapping/noDup_SRR24135554.bam > Mapping/SRR24135554.bed
+bedtools bamtobed -i Mapping/noDup_SRR24135555.bam > Mapping/SRR24135555.bed
+bedtools bamtobed -i Mapping/noDup_SRR24135556.bam > Mapping/SRR24135556.bed
 
 # Peak calling macs2
 macs2 callpeak -t Mapping/SRR24135553.bed -n SRR24135553 -q 0.05  -f BEDPE -g hs -B --keep-dup all --SPMR --call-summits --outdir Peaks
