@@ -187,12 +187,18 @@ for file in Peaks/*.narrowPeak; do
     awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4}' $file > Peaks/${base}.bed
 done
 
+# Format the bed files
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135553_peaks.bed > Peaks/SRR24135553_peaks1.bed
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135554_peaks.bed > Peaks/SRR24135554_peaks1.bed
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135555_peaks.bed > Peaks/SRR24135555_peaks1.bed
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135556_peaks.bed > Peaks/SRR24135556_peaks1.bed
+
 # Merge treatment peaks
-cat Peaks/SRR24135553_peaks.bed Peaks/SRR24135554_peaks.bed | sort -k1,1 -k2,2n > Peaks/treatment_peaks.bed
+cat Peaks/SRR24135553_peaks1.bed Peaks/SRR24135554_peaks1.bed | sort -k1,1 -k2,2n > Peaks/treatment_peaks.bed
 bedtools merge -i Peaks/treatment_peaks.bed > Peaks/dmPGE2_peaks.bed
 
 # Merge control peaks
-cat Peaks/SRR24135555_peaks.bed Peaks/SRR24135556_peaks.bed | sort -k1,1 -k2,2n > Peaks/control_peaks.bed
+cat Peaks/SRR24135555_peaks1.bed Peaks/SRR24135556_peaks1.bed | sort -k1,1 -k2,2n > Peaks/control_peaks.bed
 bedtools merge -i Peaks/control_peaks.bed > Peaks/DMSO_peaks.bed
 
 # Peak annotation using homer
