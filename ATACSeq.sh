@@ -216,7 +216,7 @@ awk '$1 !~ /\.[123]$/' Peaks/SRR24135556_treat_pileup.bdg > Peak_Calling/filtere
 fetchChromSizes hg38 > hg38.chromSizes
 
 # Convert bedGraph to bigWig
-bedGraphToBigWig Peak_Calling/filtered.SRR24135553_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135553.bw
-bedGraphToBigWig Peak_Calling/filtered.SRR24135554_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135554.bw
-bedGraphToBigWig Peak_Calling/filtered.SRR24135555_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135555.bw
-bedGraphToBigWig Peak_Calling/filtered.SRR24135556_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135556.bw
+bedGraphToBigWig Peaks/filtered.SRR24135553_treat_pileup.bdg hg38.chromSizes Peaks/filtered.SRR24135553.bw
+bedGraphToBigWig Peaks/filtered.SRR24135554_treat_pileup.bdg hg38.chromSizes Peaks/filtered.SRR24135554.bw
+bedGraphToBigWig Peaks/filtered.SRR24135555_treat_pileup.bdg hg38.chromSizes Peaks/filtered.SRR24135555.bw
+bedGraphToBigWig Peaks/filtered.SRR24135556_treat_pileup.bdg hg38.chromSizes Peaks/filtered.SRR24135556.bw
