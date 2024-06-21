@@ -205,3 +205,18 @@ bedtools merge -i Peaks/control_peaks.bed > Peaks/DMSO_peaks.bed
 annotatePeaks.pl Peaks/dmPGE2_peaks.bed hg38 > Peaks/dmPGE2_peaks.txt
 annotatePeaks.pl Peaks/DMSO_peaks.bed hg38 > Peaks/DMSO_peaks.txt
 
+# Convert bedgraph to bigwig files
+## Remove the lines in the bedgraph files that are not chromosome names
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135553_treat_pileup.bdg > Peak_Calling/filtered.SRR24135553_treat_pileup.bdg
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135554_treat_pileup.bdg > Peak_Calling/filtered.SRR24135554_treat_pileup.bdg
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135555_treat_pileup.bdg > Peak_Calling/filtered.SRR24135555_treat_pileup.bdg
+awk '$1 !~ /\.[123]$/' Peaks/SRR24135556_treat_pileup.bdg > Peak_Calling/filtered.SRR24135556_treat_pileup.bdg
+
+## Get chrom.sizes using samtools
+fetchChromSizes hg38 > hg38.chromSizes
+
+# Convert bedGraph to bigWig
+bedGraphToBigWig Peak_Calling/filtered.SRR24135553_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135553.bw
+bedGraphToBigWig Peak_Calling/filtered.SRR24135554_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135554.bw
+bedGraphToBigWig Peak_Calling/filtered.SRR24135555_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135555.bw
+bedGraphToBigWig Peak_Calling/filtered.SRR24135556_treat_pileup.bdg hg38.chromSizes Peak_Calling/filtered.SRR24135556.bw
