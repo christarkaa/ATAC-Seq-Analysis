@@ -1,8 +1,6 @@
 # Set working directory
 setwd("/Users/christophertarkaa/ATACSeq/Peaks")
 
-BiocManager::install('EnhancedVolcano')
-install.packages("ggrepel")
 # Load necessary packages
 library(GenomicRanges)
 library(DESeq2)
